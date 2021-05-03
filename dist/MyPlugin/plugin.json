@@ -1,0 +1,35 @@
+{
+  "slug": "MyPlugin",
+  "name": "My Plugin",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "brand": "My Plugin",
+  "author": "",
+  "authorEmail": "",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "MyModule",
+      "name": "MyModule",
+      "description": "",
+      "tags": []
+    },
+    {
+      "slug": "MyModule2",
+      "name": "MyModule2",
+      "description": "",
+      "tags": []
+    },
+    {
+      "slug": "MyQuantizer",
+      "name": "MyQuantizer",
+      "description": "",
+      "tags": []
+    }
+  ]
+}
