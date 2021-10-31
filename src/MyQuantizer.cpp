@@ -54,7 +54,7 @@ struct MyQuantizer : Module
 		outputs[SINE_OUTPUT].setVoltage(5.f * sine);
 
 		// Blink light at 1Hz
-		blinkPhase += args.sampleTime;
+		blinkPhase += freq * args.sampleTime;
 		if (blinkPhase >= 1.f)
 			blinkPhase -= 1.f;
 		lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);
