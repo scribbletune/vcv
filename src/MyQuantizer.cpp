@@ -5,6 +5,7 @@ struct MyQuantizer : Module
 {
 	float phase = 0.f;
 	float blinkPhase = 0.f;
+	float currentPitch = 0.f;
 
 	enum ParamIds
 	{
@@ -39,6 +40,7 @@ struct MyQuantizer : Module
 		float pitch = params[PITCH_PARAM].getValue();
 		pitch += inputs[PITCH_INPUT].getVoltage();
 		pitch = clamp(pitch, -4.f, 4.f);
+		currentPitch = inputs[PITCH_INPUT].getVoltage();
 		// The default pitch is C4 = 261.6256f
 		float freq = quantize(dsp::FREQ_C4 * std::pow(2.f, pitch), 0, 14);
 
@@ -61,8 +63,32 @@ struct MyQuantizer : Module
 	}
 };
 
+struct CustomTextFieldWidget : LedDisplayTextField
+{
+	MyQuantizer *myQuantizerModule;
+
+	CustomTextFieldWidget()
+	{
+		LedDisplayTextField();
+	}
+	void step() override
+	{
+		// this text field widget can access the module eg:
+
+		if (myQuantizerModule)
+		{ // dont leave out this check
+			// myQuantizerModule->someModuleMethod();
+			this->setText(std::to_string(myQuantizerModule->currentPitch));
+		}
+
+		// call the inherited step method
+		LedDisplayTextField::step();
+	}
+};
+
 struct MyQuantizerWidget : ModuleWidget
 {
+	CustomTextFieldWidget *textField;
 	MyQuantizerWidget(MyQuantizer *module)
 	{
 		setModule(module);
@@ -81,8 +107,9 @@ struct MyQuantizerWidget : ModuleWidget
 
 		addChild(createLightCentered<MediumLight<RedLight> >(mm2px(Vec(15.24, 25.81)), module, MyQuantizer::BLINK_LIGHT));
 
-		LedDisplayTextField *textField = createWidget<LedDisplayTextField>(mm2px(Vec(0.0, 60.0)));
-		textField->setText("Hello");
+		textField = createWidget<CustomTextFieldWidget>(mm2px(Vec(0.0, 60.0)));
+		textField->myQuantizerModule = module;
+		textField->setText("Helios");
 		textField->box.size = mm2px(Vec(40.0, 10.0));
 		addChild(textField);
 	}
