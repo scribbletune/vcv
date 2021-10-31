@@ -80,6 +80,11 @@ struct MyQuantizerWidget : ModuleWidget
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(15.24, 108.713)), module, MyQuantizer::SINE_OUTPUT));
 
 		addChild(createLightCentered<MediumLight<RedLight> >(mm2px(Vec(15.24, 25.81)), module, MyQuantizer::BLINK_LIGHT));
+
+		LedDisplayTextField *textField = createWidget<LedDisplayTextField>(mm2px(Vec(0.0, 60.0)));
+		textField->setText("Hello");
+		textField->box.size = mm2px(Vec(40.0, 10.0));
+		addChild(textField);
 	}
 };
 
