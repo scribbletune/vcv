@@ -28,7 +28,7 @@ struct MyQuantizer : Module
 	MyQuantizer()
 	{
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS);
-		configParam(PITCH_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(PITCH_PARAM, 0.f, 11.f, 0.f, "");
 	}
 
 	void process(const ProcessArgs &args) override
@@ -82,6 +82,7 @@ struct CustomTextFieldWidget : LedDisplayTextField
 struct MyQuantizerWidget : ModuleWidget
 {
 	CustomTextFieldWidget *textField;
+	RoundBlackKnob *rootNoteKnob;
 	MyQuantizerWidget(MyQuantizer *module)
 	{
 		setModule(module);
@@ -92,7 +93,11 @@ struct MyQuantizerWidget : ModuleWidget
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(15.24, 46.063)), module, MyQuantizer::PITCH_PARAM));
+		rootNoteKnob = createParamCentered<RoundBlackKnob>(mm2px(Vec(15.24, 46.063)), module, MyQuantizer::PITCH_PARAM);
+		// rootNoteKnob->speed = 10.0;
+		rootNoteKnob->snap = true;
+		// rootNoteKnob->snapValue = 0.1;
+		addParam(rootNoteKnob);
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.24, 77.478)), module, MyQuantizer::CV_INPUT));
 
