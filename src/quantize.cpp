@@ -1,9 +1,8 @@
 #include <iostream>
+#include <vector>
 #include "quantize.hpp"
 
-double scale[] = {130.81, 146.83, 164.81, 174.61, 196.00, 220.00, 246.94, 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25};
-
-double quantize(double freq, int L, int R)
+double quantize(std::vector<double> &scale, double freq, int L, int R)
 {
     if (scale[L] > freq)
     {
@@ -50,10 +49,10 @@ double quantize(double freq, int L, int R)
 
     if (scale[mid] > freq)
     {
-        return quantize(freq, L, mid);
+        return quantize(scale, freq, L, mid);
     }
     else
     {
-        return quantize(freq, mid, R);
+        return quantize(scale, freq, mid, R);
     }
 }

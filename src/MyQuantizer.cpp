@@ -1,65 +1,53 @@
 #include "plugin.hpp"
 #include "quantize.hpp"
 
+int intervals[] = {0, 1, 3, 6, 7, 8, 9, 12};
+
 struct MyQuantizer : Module
 {
-	float phase = 0.f;
-	float blinkPhase = 0.f;
-	float currentPitch = 0.f;
+	float incomingCv = 0.f;
+	std::string debugValue;
+	float outgoingCv = 0.f;
 
 	enum ParamIds
 	{
-		PITCH_PARAM,
-		NUM_PARAMS
+		NUM_PARAMS // consider adding a param to select the scale/raga
 	};
 	enum InputIds
 	{
-		PITCH_INPUT,
+		CV_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds
 	{
-		SINE_OUTPUT,
+		CV_OUTPUT,
 		NUM_OUTPUTS
-	};
-	enum LightIds
-	{
-		BLINK_LIGHT,
-		NUM_LIGHTS
 	};
 
 	MyQuantizer()
 	{
-		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(PITCH_PARAM, 0.f, 1.f, 0.f, "");
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS);
 	}
 
 	void process(const ProcessArgs &args) override
 	{
-		// Compute the frequency from the pitch parameter and input
-		float pitch = params[PITCH_PARAM].getValue();
-		pitch += inputs[PITCH_INPUT].getVoltage();
-		pitch = clamp(pitch, -4.f, 4.f);
-		currentPitch = inputs[PITCH_INPUT].getVoltage();
-		// The default pitch is C4 = 261.6256f
-		float freq = quantize(dsp::FREQ_C4 * std::pow(2.f, pitch), 0, 14);
+		incomingCv = inputs[CV_INPUT].getVoltage();
+		double absIncomingCv = abs(incomingCv);
+		double oct = floor(absIncomingCv);
+		double decimal = absIncomingCv - oct;
 
-		// Accumulate the phase
-		phase += freq * args.sampleTime;
-		if (phase >= 0.5f)
-			phase -= 1.f;
+		// construct scale
+		std::vector<double> scale;
+		for (int i = 0; i < 7; i++)
+		{
+			scale.push_back(intervals[i] / 12.0);
+		}
+		double quantizedCv = oct + quantize(scale, decimal);
+		outgoingCv = incomingCv < 0 ? -quantizedCv : quantizedCv;
+		debugValue = std::to_string(quantizedCv);
 
-		// Compute the sine output
-		float sine = std::sin(2.f * M_PI * phase);
-		// Audio signals are typically +/-5V
-		// https://vcvrack.com/manual/VoltageStandards.html
-		outputs[SINE_OUTPUT].setVoltage(5.f * sine);
-
-		// Blink light at 1Hz
-		blinkPhase += freq * args.sampleTime;
-		if (blinkPhase >= 1.f)
-			blinkPhase -= 1.f;
-		lights[BLINK_LIGHT].setBrightness(blinkPhase < 0.5f ? 1.f : 0.f);
+		outputs[CV_OUTPUT]
+			.setVoltage(outgoingCv);
 	}
 };
 
@@ -78,7 +66,7 @@ struct CustomTextFieldWidget : LedDisplayTextField
 		if (myQuantizerModule)
 		{ // dont leave out this check
 			// myQuantizerModule->someModuleMethod();
-			this->setText(std::to_string(myQuantizerModule->currentPitch));
+			this->setText(std::to_string(myQuantizerModule->incomingCv) + "\n" + myQuantizerModule->debugValue);
 		}
 
 		// call the inherited step method
@@ -99,18 +87,13 @@ struct MyQuantizerWidget : ModuleWidget
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(15.24, 46.063)), module, MyQuantizer::PITCH_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.24, 77.478)), module, MyQuantizer::CV_INPUT));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.24, 77.478)), module, MyQuantizer::PITCH_INPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(15.24, 108.713)), module, MyQuantizer::CV_OUTPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(15.24, 108.713)), module, MyQuantizer::SINE_OUTPUT));
-
-		addChild(createLightCentered<MediumLight<RedLight> >(mm2px(Vec(15.24, 25.81)), module, MyQuantizer::BLINK_LIGHT));
-
-		textField = createWidget<CustomTextFieldWidget>(mm2px(Vec(0.0, 60.0)));
+		textField = createWidget<CustomTextFieldWidget>(mm2px(Vec(0.0, 50.0)));
 		textField->myQuantizerModule = module;
-		textField->setText("Helios");
-		textField->box.size = mm2px(Vec(40.0, 10.0));
+		textField->box.size = mm2px(Vec(40.0, 15.0));
 		addChild(textField);
 	}
 };
