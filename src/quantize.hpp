@@ -3,3 +3,4 @@
 #include <iostream>
 double quantize(std::vector<double> &scale, double freq, int L = 0, int R = 6);
 std::string getNoteName(int idx);
+std::string getRagaName(int idx);

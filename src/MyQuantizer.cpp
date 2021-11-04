@@ -11,7 +11,8 @@ struct MyQuantizer : Module
 
 	enum ParamIds
 	{
-		PITCH_PARAM,
+		RAGA_PARAM,
+		ROOT_NOTE_PARAM,
 		NUM_PARAMS // consider adding a param to select the scale/raga
 	};
 	enum InputIds
@@ -28,13 +29,15 @@ struct MyQuantizer : Module
 	MyQuantizer()
 	{
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS);
-		configParam(PITCH_PARAM, 0.f, 11.f, 0.f, "");
+		configParam(RAGA_PARAM, 0.f, 5.f, 0.f, "");
+		configParam(ROOT_NOTE_PARAM, 0.f, 11.f, 0.f, "");
 	}
 
 	void process(const ProcessArgs &args) override
 	{
-		float pitch = params[PITCH_PARAM].getValue();
-		debugValue = getNoteName(int(pitch));
+		float rootNote = params[ROOT_NOTE_PARAM].getValue();
+		float raga = params[RAGA_PARAM].getValue();
+		debugValue = getNoteName(int(rootNote)) + " " + getRagaName(int(raga));
 
 		incomingCv = inputs[CV_INPUT].getVoltage();
 		double absIncomingCv = abs(incomingCv);
@@ -92,7 +95,11 @@ struct MyQuantizerWidget : ModuleWidget
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		RoundBlackKnob *rootNoteKnob = createParamCentered<RoundBlackKnob>(mm2px(Vec(15, 45)), module, MyQuantizer::PITCH_PARAM);
+		RoundBlackKnob *ragaKnob = createParamCentered<RoundBlackKnob>(mm2px(Vec(15, 21)), module, MyQuantizer::RAGA_PARAM);
+		ragaKnob->snap = true;
+		addParam(ragaKnob);
+
+		RoundBlackKnob *rootNoteKnob = createParamCentered<RoundBlackKnob>(mm2px(Vec(15, 45)), module, MyQuantizer::ROOT_NOTE_PARAM);
 		rootNoteKnob->snap = true;
 		addParam(rootNoteKnob);
 

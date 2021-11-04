@@ -62,3 +62,9 @@ std::string getNoteName(int idx)
 {
     return noteNames[idx];
 }
+
+std::string ragaNames[] = {"Dhavalambari", "Nāmanarayani", "Kamavardhini", "Ramapriya", "Gamanashrama", "Vishwambari"};
+std::string getRagaName(int idx)
+{
+    return ragaNames[idx];
+}
