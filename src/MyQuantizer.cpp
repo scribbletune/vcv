@@ -34,7 +34,7 @@ struct MyQuantizer : Module
 	void process(const ProcessArgs &args) override
 	{
 		float pitch = params[PITCH_PARAM].getValue();
-		debugValue = std::to_string(pitch);
+		debugValue = getNoteName(int(pitch));
 
 		incomingCv = inputs[CV_INPUT].getVoltage();
 		double absIncomingCv = abs(incomingCv);
@@ -82,7 +82,6 @@ struct CustomTextFieldWidget : LedDisplayTextField
 struct MyQuantizerWidget : ModuleWidget
 {
 	CustomTextFieldWidget *textField;
-	RoundBlackKnob *rootNoteKnob;
 	MyQuantizerWidget(MyQuantizer *module)
 	{
 		setModule(module);
@@ -93,10 +92,8 @@ struct MyQuantizerWidget : ModuleWidget
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		rootNoteKnob = createParamCentered<RoundBlackKnob>(mm2px(Vec(15.24, 46.063)), module, MyQuantizer::PITCH_PARAM);
-		// rootNoteKnob->speed = 10.0;
+		RoundBlackKnob *rootNoteKnob = createParamCentered<RoundBlackKnob>(mm2px(Vec(15, 45)), module, MyQuantizer::PITCH_PARAM);
 		rootNoteKnob->snap = true;
-		// rootNoteKnob->snapValue = 0.1;
 		addParam(rootNoteKnob);
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.24, 77.478)), module, MyQuantizer::CV_INPUT));

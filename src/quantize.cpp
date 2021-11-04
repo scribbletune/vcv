@@ -56,3 +56,9 @@ double quantize(std::vector<double> &scale, double freq, int L, int R)
         return quantize(scale, freq, mid, R);
     }
 }
+
+std::string noteNames[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+std::string getNoteName(int idx)
+{
+    return noteNames[idx];
+}
