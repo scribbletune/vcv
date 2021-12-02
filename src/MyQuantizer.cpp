@@ -52,7 +52,7 @@ struct MyQuantizer : Module
 		{
 			scale.push_back(*(p + i) / 12.0);
 		}
-		double quantizedCv = oct + quantize(scale, decimal);
+		double quantizedCv = oct + getNoteValue(rootNote) + quantize(scale, decimal, 0, r.len - 1);
 		outgoingCv = incomingCv < 0 ? -quantizedCv : quantizedCv;
 		// debugValue = std::to_string(quantizedCv);
 
