@@ -1,8 +1,6 @@
 #include "plugin.hpp"
 #include "quantize.hpp"
 
-int intervals[] = {0, 3, 4, 6, 7, 10, 11, 12};
-
 struct MyQuantizer : Module
 {
 	float incomingCv = 0.f;
@@ -45,10 +43,14 @@ struct MyQuantizer : Module
 		double decimal = absIncomingCv - oct;
 
 		// construct scale
+		RagaObj r = getRagaByIdx(0);
+		int *p;
+		p = r.indices;
+		// int len = *(&intervals + 1) - intervals;
 		std::vector<double> scale;
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < r.len; i++)
 		{
-			scale.push_back(intervals[i] / 12.0);
+			scale.push_back(*(p + i) / 12.0);
 		}
 		double quantizedCv = oct + quantize(scale, decimal);
 		outgoingCv = incomingCv < 0 ? -quantizedCv : quantizedCv;
