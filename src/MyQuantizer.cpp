@@ -3,9 +3,15 @@
 
 struct MyQuantizer : Module
 {
+	float rootNote = 0.f;
+	float lastKnownRootNote = rootNote;
+	float raga = 0.f;
+	float lastKnownRaga = raga;
 	float incomingCv = 0.f;
+	float lastKnownIncomingCv = incomingCv;
 	std::string debugValue = "Debug";
-	float outgoingCv = 0.f;
+	float outgoingCv = incomingCv;
+	int c = 0;
 
 	enum ParamIds
 	{
@@ -27,26 +33,37 @@ struct MyQuantizer : Module
 	MyQuantizer()
 	{
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS);
-		configParam(RAGA_PARAM, 0.f, 5.f, 0.f, "");
+		configParam(RAGA_PARAM, 0.f, 5.f, 0.f, ""); // paramId, minValue, maxValue, defaultValue, label
 		configParam(ROOT_NOTE_PARAM, 0.f, 11.f, 0.f, "");
 	}
 
 	void process(const ProcessArgs &args) override
 	{
-		float rootNote = params[ROOT_NOTE_PARAM].getValue();
-		float raga = params[RAGA_PARAM].getValue();
-		debugValue = getNoteName(int(rootNote)) + " " + getRagaName(int(raga));
-
+		rootNote = params[ROOT_NOTE_PARAM].getValue();
+		raga = params[RAGA_PARAM].getValue();
 		incomingCv = inputs[CV_INPUT].getVoltage();
+
+		debugValue = std::to_string(c) + " " + getNoteName(int(rootNote)) + " " + getRagaName(int(raga));
+
+		// Quantize output only if it s new
+		if (rootNote == lastKnownRootNote && raga == lastKnownRaga && incomingCv == lastKnownIncomingCv)
+		{
+			return;
+		}
+
+		lastKnownRootNote = rootNote;
+		lastKnownRaga = raga;
+		lastKnownIncomingCv = incomingCv;
+
 		double absIncomingCv = abs(incomingCv);
 		double oct = floor(absIncomingCv);
 		double decimal = absIncomingCv - oct;
 
-		// construct scale
-		RagaObj r = getRagaByIdx(0);
+		RagaObj r = getRagaByIdx(raga);
 		int *p;
 		p = r.indices;
 		// int len = *(&intervals + 1) - intervals;
+		// construct scale to use at run time
 		std::vector<double> scale;
 		for (int i = 0; i < r.len; i++)
 		{
@@ -54,6 +71,7 @@ struct MyQuantizer : Module
 		}
 		double quantizedCv = oct + getNoteValue(rootNote) + quantize(scale, decimal, 0, r.len - 1);
 		outgoingCv = incomingCv < 0 ? -quantizedCv : quantizedCv;
+		c++;
 		// debugValue = std::to_string(quantizedCv);
 
 		outputs[CV_OUTPUT]
