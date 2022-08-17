@@ -75,12 +75,12 @@ std::string getRagaName(int idx)
     return ragaNames[idx];
 }
 
-struct RagaObj Dhavalambari = {8, {0, 3, 4, 6, 7, 10, 11, 12}};
-struct RagaObj Namanarayani = {8, {0, 2, 4, 6, 7, 10, 11, 12}};
-struct RagaObj Kamavardhini = {8, {0, 1, 4, 6, 7, 8, 11, 12}};
-struct RagaObj Ramapriya = {8, {0, 1, 4, 6, 7, 9, 10, 12}};
-struct RagaObj Gamanashrama = {8, {0, 1, 4, 6, 7, 9, 11, 12}};
-struct RagaObj Vishwambari = {8, {0, 1, 4, 6, 7, 10, 11, 12}};
+struct RagaObj Dhavalambari = {7, {0, 3, 4, 6, 7, 10, 11}};
+struct RagaObj Namanarayani = {7, {0, 2, 4, 6, 7, 10, 11}};
+struct RagaObj Kamavardhini = {7, {0, 1, 4, 6, 7, 8, 11}};
+struct RagaObj Ramapriya = {7, {0, 1, 4, 6, 7, 9, 10}};
+struct RagaObj Gamanashrama = {7, {0, 1, 4, 6, 7, 9, 11}};
+struct RagaObj Vishwambari = {7, {0, 1, 4, 6, 7, 10, 11}};
 
 RagaObj getRagaByIdx(int idx)
 {

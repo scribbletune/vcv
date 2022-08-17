@@ -72,10 +72,8 @@ struct MyQuantizer : Module
 		double quantizedCv = oct + getNoteValue(rootNote) + quantize(scale, decimal, 0, r.len - 1);
 		outgoingCv = incomingCv < 0 ? -quantizedCv : quantizedCv;
 		c++;
-		// debugValue = std::to_string(quantizedCv);
 
-		outputs[CV_OUTPUT]
-			.setVoltage(outgoingCv);
+		outputs[CV_OUTPUT].setVoltage(outgoingCv);
 	}
 };
 
@@ -89,11 +87,9 @@ struct CustomTextFieldWidget : LedDisplayTextField
 	}
 	void step() override
 	{
-		// this text field widget can access the module eg:
-
-		if (myQuantizerModule)
-		{ // dont leave out this check
-			// myQuantizerModule->someModuleMethod();
+		// this text field widget can access the module
+		if (myQuantizerModule) // dont leave out this check
+		{
 			this->setText(myQuantizerModule->debugValue);
 		}
 
