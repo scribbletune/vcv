@@ -1,5 +1,6 @@
 #include "plugin.hpp"
 #include "quantize.hpp"
+#include "raga.hpp"
 
 struct MyQuantizer : Module
 {
@@ -10,6 +11,8 @@ struct MyQuantizer : Module
 	float incomingCv = 0.f;
 	float lastKnownIncomingCv = incomingCv;
 	std::string debugValue = "Debug";
+	std::string currentRagaName = "Dhavalambari";
+	std::string currentNoteName = "C";
 	float outgoingCv = incomingCv;
 	int c = 0;
 
@@ -44,6 +47,8 @@ struct MyQuantizer : Module
 		incomingCv = inputs[CV_INPUT].getVoltage();
 
 		debugValue = std::to_string(c) + " " + getNoteName(int(rootNote)) + " " + getRagaName(int(raga));
+		currentRagaName = getRagaName(int(raga));
+		currentNoteName = getNoteName(int(rootNote));
 
 		// Quantize output only if it s new
 		if (rootNote == lastKnownRootNote && raga == lastKnownRaga && incomingCv == lastKnownIncomingCv)
@@ -90,7 +95,7 @@ struct CustomTextFieldWidget : LedDisplayTextField
 		// this text field widget can access the module
 		if (myQuantizerModule) // dont leave out this check
 		{
-			this->setText(myQuantizerModule->debugValue);
+			this->setText(myQuantizerModule->currentRagaName);
 		}
 
 		// call the inherited step method
@@ -123,7 +128,7 @@ struct MyQuantizerWidget : ModuleWidget
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(15.24, 108.713)), module, MyQuantizer::CV_OUTPUT));
 
-		textField = createWidget<CustomTextFieldWidget>(mm2px(Vec(0.0, 60.0)));
+		textField = createWidget<CustomTextFieldWidget>(mm2px(Vec(0.0, 25.0)));
 		textField->myQuantizerModule = module;
 		textField->box.size = mm2px(Vec(40.0, 10.0));
 		addChild(textField);
