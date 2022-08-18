@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
-#include "raga.hpp"
+#include "Brahma.hpp"
 
-std::string ragaNames[] = {"Dhavalambari", "Namanarayani", "Kamavardhini", "Ramapriya", "Gamanashrama", "Vishwambari"};
+std::string ragaNames[] = {"DHAVALAMBARI", "NAMANARAYANI", "KAMAVARDHINI", "RAMAPRIYA", "GAMANASHRAMA", "VISHWAMBARI"};
 std::string getRagaName(int idx)
 {
   return ragaNames[idx];
