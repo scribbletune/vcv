@@ -1,6 +1,60 @@
+#include <iostream>
+#include <vector>
 #include "plugin.hpp"
 #include "quantize.hpp"
-#include "Brahma.hpp"
+
+struct RagaObj
+{
+	int len;
+	int indices[18];
+};
+
+std::string brahmaRagaNames[] = {"DHAVALAMBARI", "NAMANARAYANI", "KAMAVARDHINI", "RAMAPRIYA", "GAMANASHRAMA", "VISHWAMBARI"};
+std::string getBrahmaRagaName(int idx)
+{
+	return brahmaRagaNames[idx];
+}
+
+struct RagaObj Dhavalambari = {7, {0, 3, 4, 6, 7, 10, 11}};
+struct RagaObj Namanarayani = {7, {0, 2, 4, 6, 7, 10, 11}};
+struct RagaObj Kamavardhini = {7, {0, 1, 4, 6, 7, 8, 11}};
+struct RagaObj Ramapriya = {7, {0, 1, 4, 6, 7, 9, 10}};
+struct RagaObj Gamanashrama = {7, {0, 1, 4, 6, 7, 9, 11}};
+struct RagaObj Vishwambari = {7, {0, 1, 4, 6, 7, 10, 11}};
+
+RagaObj getBrahmaRagaByIdx(int idx)
+{
+	switch (idx)
+	{
+	case 0:
+		return Dhavalambari;
+		break;
+
+	case 1:
+		return Namanarayani;
+		break;
+
+	case 2:
+		return Kamavardhini;
+		break;
+
+	case 3:
+		return Ramapriya;
+		break;
+
+	case 4:
+		return Gamanashrama;
+		break;
+
+	case 5:
+		return Vishwambari;
+		break;
+
+	default:
+		return Dhavalambari;
+		break;
+	}
+}
 
 struct BrahmaQuantizer : Module
 {
@@ -10,7 +64,6 @@ struct BrahmaQuantizer : Module
 	float lastKnownRaga = raga;
 	float incomingCv = 0.f;
 	float lastKnownIncomingCv = incomingCv;
-	std::string debugValue = "Debug";
 	std::string currentRagaName = "DHAVALAMBARI";
 	std::string currentRootNoteName = "C";
 	float outgoingCv = incomingCv;
@@ -46,8 +99,7 @@ struct BrahmaQuantizer : Module
 		raga = params[RAGA_PARAM].getValue();
 		incomingCv = inputs[CV_INPUT].getVoltage();
 
-		debugValue = std::to_string(c) + " " + getNoteName(int(rootNote)) + " " + getRagaName(int(raga));
-		currentRagaName = getRagaName(int(raga));
+		currentRagaName = getBrahmaRagaName(int(raga));
 		currentRootNoteName = getNoteName(int(rootNote));
 
 		// Quantize output only if it s new
@@ -64,7 +116,7 @@ struct BrahmaQuantizer : Module
 		double oct = floor(absIncomingCv);
 		double decimal = absIncomingCv - oct;
 
-		RagaObj r = getRagaByIdx(raga);
+		RagaObj r = getBrahmaRagaByIdx(raga);
 		int *p;
 		p = r.indices;
 		// int len = *(&intervals + 1) - intervals;
@@ -84,7 +136,7 @@ struct BrahmaQuantizer : Module
 
 struct RagaNameTextFieldWidget : LedDisplayTextField
 {
-	BrahmaQuantizer *brahmaModule;
+	BrahmaQuantizer *module;
 
 	RagaNameTextFieldWidget()
 	{
@@ -93,9 +145,13 @@ struct RagaNameTextFieldWidget : LedDisplayTextField
 	void step() override
 	{
 		// this text field widget can access the module
-		if (brahmaModule) // dont leave out this check
+		if (module) // dont leave out this check
 		{
-			this->setText(brahmaModule->currentRagaName);
+			this->setText(module->currentRagaName);
+		}
+		else
+		{
+			this->setText("eh");
 		}
 
 		// call the inherited step method
@@ -105,7 +161,7 @@ struct RagaNameTextFieldWidget : LedDisplayTextField
 
 struct RootNoteNameTextFieldWidget : LedDisplayTextField
 {
-	BrahmaQuantizer *brahmaModule;
+	BrahmaQuantizer *module;
 
 	RootNoteNameTextFieldWidget()
 	{
@@ -114,9 +170,9 @@ struct RootNoteNameTextFieldWidget : LedDisplayTextField
 	void step() override
 	{
 		// this text field widget can access the module
-		if (brahmaModule) // dont leave out this check
+		if (module) // dont leave out this check
 		{
-			this->setText(brahmaModule->currentRootNoteName);
+			this->setText(module->currentRootNoteName);
 		}
 
 		// call the inherited step method
@@ -151,11 +207,11 @@ struct BrahmaQuantizerWidget : ModuleWidget
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(10.24, 108.713)), module, BrahmaQuantizer::CV_OUTPUT));
 
 		ragaNameText = createWidget<RagaNameTextFieldWidget>(mm2px(Vec(-3.0, 32.0))); // x, y
-		ragaNameText->brahmaModule = module;
+		ragaNameText->module = module;
 		ragaNameText->box.size = mm2px(Vec(30.0, 10.0)); // w x h
 
 		rootNoteNameText = createWidget<RootNoteNameTextFieldWidget>(mm2px(Vec(5.0, 55.0))); // x, y
-		rootNoteNameText->brahmaModule = module;
+		rootNoteNameText->module = module;
 		rootNoteNameText->box.size = mm2px(Vec(10.0, 10.0)); // w x h
 
 		addChild(ragaNameText);

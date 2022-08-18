@@ -18,6 +18,24 @@
       "name": "Brahma",
       "description": "Brahma is one out of the 12 Melakarta Raga system",
       "tags": ["quantizer", "indian", "raga"]
+    },
+    {
+      "slug": "Indu",
+      "name": "Indu",
+      "description": "Indu is one out of the 12 Melakarta Raga system",
+      "tags": ["quantizer", "indian", "raga"]
+    },
+    {
+      "slug": "Netra",
+      "name": "Netra",
+      "description": "Netra is one out of the 12 Melakarta Raga system",
+      "tags": ["quantizer", "indian", "raga"]
+    },
+    {
+      "slug": "Agni",
+      "name": "Agni",
+      "description": "Agni is one out of the 12 Melakarta Raga system",
+      "tags": ["quantizer", "indian", "raga"]
     }
   ]
 }
