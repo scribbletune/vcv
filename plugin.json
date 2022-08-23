@@ -36,6 +36,18 @@
       "name": "Agni",
       "description": "Agni is one out of the 12 Melakarta Raga system",
       "tags": ["quantizer", "indian", "raga"]
+    },
+    {
+      "slug": "Bana",
+      "name": "Bana",
+      "description": "Bana is one out of the 12 Melakarta Raga system",
+      "tags": ["quantizer", "indian", "raga"]
+    },
+    {
+      "slug": "Rutu",
+      "name": "Rutu",
+      "description": "Rutu is one out of the 12 Melakarta Raga system",
+      "tags": ["quantizer", "indian", "raga"]
     }
   ]
 }

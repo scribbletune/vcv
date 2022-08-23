@@ -11,3 +11,5 @@ extern Model *modelBrahmaQuantizer;
 extern Model *modelInduQuantizer;
 extern Model *modelNetraQuantizer;
 extern Model *modelAgniQuantizer;
+extern Model *modelBanaQuantizer;
+extern Model *modelRutuQuantizer;
