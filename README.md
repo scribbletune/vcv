@@ -1,1 +1,1 @@
-Defunct VCV rack experiments using concept of Scibbletune. Mostly created for learning VCV rack plugin dev and C++
+Defunct VCV rack experiments using the concepts from Scibbletune. Mostly created for learning VCV rack plugin dev and C++
